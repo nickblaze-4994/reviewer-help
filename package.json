@@ -1,0 +1,24 @@
+{
+  "name": "reviewer-help",
+  "version": "1.0.0",
+  "description": "Upload project guidance, QC reports, or evaluation instructions, then ask questions about the documents. Each answer includes the source passages it used.",
+  "scripts": {},
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/nickblaze-4994/reviewer-help.git"
+  },
+  "keywords": [],
+  "author": "",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/nickblaze-4994/reviewer-help/issues"
+  },
+  "homepage": "https://github.com/nickblaze-4994/reviewer-help#readme",
+  "dependencies": {
+    "@vercel/blob": "^2.9.0",
+    "ai": "^7.0.171",
+    "mammoth": "^1.13.0",
+    "unpdf": "^2.1.0"
+  },
+  "private": true
+}

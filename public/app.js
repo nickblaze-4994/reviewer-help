@@ -15,7 +15,7 @@ async function request(path, options) {
 
 function authorization() {
   const token = get('passcode').value;
-  return token ? { Authorization: 'Bearer ' + token } : {};
+  return token ? { 'X-QA-Passcode': token } : {};
 }
 
 async function refresh() {
@@ -63,7 +63,7 @@ files.addEventListener('change', async () => {
     get('upload-status').textContent = 'Reading ' + file.name + '…';
     try {
       await request('/api/library', {
-        method: 'POST', headers: { ...authorization(), 'X-File-Name': encodeURIComponent(file.name) }, body: file
+        method: 'POST', headers: { ...authorization(), 'X-File-Name': encodeURIComponent(file.name), 'Content-Type': 'application/octet-stream' }, body: file
       });
       messages.push('Ready: ' + file.name);
     } catch (error) {

@@ -1,0 +1,11 @@
+{
+  "functions": { "api/cloud.mjs": { "includeFiles": "public/**", "maxDuration": 60 } },
+  "rewrites": [
+    { "source": "/", "destination": "/api/cloud?route=/" },
+    { "source": "/app.js", "destination": "/api/cloud?route=/app.js" },
+    { "source": "/style.css", "destination": "/api/cloud?route=/style.css" },
+    { "source": "/api/chat", "destination": "/api/cloud?route=/api/chat" },
+    { "source": "/api/library", "destination": "/api/cloud?route=/api/library" },
+    { "source": "/api/library/:id", "destination": "/api/cloud?route=/api/library/:id" }
+  ]
+}
