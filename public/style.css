@@ -1,0 +1,49 @@
+@font-face { font-family: "Reviewer Calibri"; src: local("Calibri"), url("/fonts/calibri.ttf") format("truetype"); font-weight: 400; font-display: swap; }
+@font-face { font-family: "Reviewer Calibri"; src: local("Calibri Bold"), url("/fonts/calibri-bold.ttf") format("truetype"); font-weight: 700; font-display: swap; }
+:root { color-scheme: light; font-family: "Reviewer Calibri", Calibri, system-ui, sans-serif; font-size: 17px; color: #253c34; background: #f9fbf8; }
+* { box-sizing: border-box; }
+body { margin: 0; min-height: 100dvh; display: grid; grid-template-columns: minmax(245px, 300px) minmax(0, 1fr); }
+aside { background: #edf3ed; border-right: 1px solid #d9e5dc; padding: 30px 22px; }
+.brand { display: flex; align-items: center; gap: 11px; font-weight: 700; font-size: 22px; margin-bottom: 48px; }
+.brand span, .mark { display: grid; place-items: center; border-radius: 12px; color: white; background: #225746; width: 36px; height: 36px; }
+.library-head { display: flex; align-items: center; justify-content: space-between; }
+.library-head h2 { font-size: 17px; }
+#count { background: #dce9df; border-radius: 20px; padding: 2px 9px; font-size: 13px; }
+ul { list-style: none; padding: 0; margin: 4px 0 15px; }
+li { display: flex; justify-content: space-between; align-items: center; gap: 5px; border-bottom: 1px solid #d9e5dc; padding: 9px 0; }
+li span { min-width: 0; overflow-wrap: anywhere; font-size: 16px; }
+li small { display: block; color: #4d665b; margin-top: 4px; }
+li button { padding: 4px 7px; font-size: 13px; }
+#empty, .hint, #upload-status { font-size: 14px; color: #425e52; }
+#upload-status { overflow-wrap: anywhere; }
+button, .upload-button { font: inherit; border: 1px solid #bfd2c5; color: #225746; background: #fff; border-radius: 9px; padding: 9px 13px; cursor: pointer; font-weight: 700; }
+button:hover, .upload-button:hover { background: #e3eee6; }
+button:disabled { cursor: wait; opacity: .6; }
+.upload-button { display: block; position: relative; text-align: center; margin-top: 20px; }
+.upload-button input { position: absolute; inset: 0; opacity: 0; width: 100%; cursor: pointer; }
+.upload-button:focus-within { outline: 2px solid #225746; }
+#passcode-label { font-size: 13px; }
+#passcode { display: block; margin-top: 5px; width: 100%; }
+main { width: min(100%, 940px); margin: auto; height: 100dvh; display: grid; grid-template-rows: auto minmax(0, 1fr) auto auto; padding: 28px clamp(20px, 5vw, 64px) 16px; }
+header { display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid #d9e5dc; padding-bottom: 17px; }
+h1 { font-size: 23px; margin: 0; }
+#chat { overflow: auto; padding: 22px 3px; }
+.welcome { min-height: 100%; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; }
+.welcome[hidden] { display: none; }
+.mark { width: 52px; height: 52px; font-size: 27px; font-weight: 700; }
+.welcome h2 { font-size: clamp(24px, 4vw, 36px); letter-spacing: -.035em; margin: 17px 0 5px; }
+.welcome p { margin: 4px 0 25px; color: #4d665b; }
+.message { max-width: min(90%, 680px); margin: 10px 0 18px; padding: 14px 17px; border: 1px solid #d9e5dc; border-radius: 13px; background: white; white-space: pre-wrap; overflow-wrap: anywhere; line-height: 1.55; }
+.user { margin-left: auto; background: #e4efe8; }
+details { margin-top: 9px; padding: 7px 9px; background: #f2f7f2; border-radius: 6px; font-size: 15px; }
+summary { cursor: pointer; font-weight: 700; }
+details p { margin: 7px 0 2px; }
+#ask { display: flex; gap: 9px; }
+input { font: inherit; border: 1px solid #bfd2c5; padding: 10px 12px; background: white; border-radius: 9px; }
+#question { flex: 1; min-width: 0; }
+#send { background: #225746; color: white; padding-inline: 20px; }
+#send:hover { background: #184435; }
+.brand, h1, h2 { color: #163f32; }
+.footer { margin: 9px 0 0; min-height: 1em; }
+.sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); }
+@media (max-width: 700px) { body { display: flex; flex-direction: column-reverse; } main { height: 75dvh; padding-top: 14px; } aside { border: 0; border-top: 1px solid #d9e5dc; padding: 20px; } .brand { margin-bottom: 13px; } }

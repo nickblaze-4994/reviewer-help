@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Reviewer Help</title>
+  <link rel="stylesheet" href="/style.css">
+  <script type="module" src="/app.js"></script>
+</head>
+<body>
+  <aside>
+    <div class="brand"><span aria-hidden="true">?</span> Reviewer Help</div>
+    <div class="library-head"><h2>Source library</h2><span id="count">0</span></div>
+    <ul id="library"></ul>
+    <p id="empty">No files uploaded yet.</p>
+    <form id="upload">
+      <label id="passcode-label" hidden>QA passcode<input id="passcode" type="password" autocomplete="current-password"></label>
+      <label class="upload-button">Upload files<input id="files" type="file" multiple accept=".pdf,.docx,.txt,.md" aria-label="Upload files"></label>
+      <p class="hint">PDF, DOCX, TXT or Markdown · 10 MB per file</p>
+      <p id="upload-status" role="status"></p>
+    </form>
+  </aside>
+  <main>
+    <header><h1>Ask a question</h1><button id="clear" type="button">New chat</button></header>
+    <div id="chat" aria-live="polite">
+      <div class="welcome" id="welcome">
+        <div class="mark" aria-hidden="true">?</div>
+        <h2>What do you need help with?</h2>
+        <p>Ask about a rubric, evaluation, or reviewer workflow.</p>
+      </div>
+    </div>
+    <form id="ask">
+      <label class="sr-only" for="question">Your question</label>
+      <input id="question" maxlength="1500" placeholder="Ask about the uploaded files…" required>
+      <button id="send" type="submit">Send</button>
+    </form>
+    <p id="mode" class="hint footer"></p>
+  </main>
+</body>
+</html>
