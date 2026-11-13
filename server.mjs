@@ -14,7 +14,10 @@ const library = join(data, 'library.json');
 const maxBytes = 10 * 1024 * 1024;
 const model = process.env.QC_MODEL ?? 'qwen3.5:2b';
 const adminToken = process.env.QC_ADMIN_TOKEN || '';
-import { passages, retrieve, summarizeLibrary } from './knowledge.mjs';
+import { passages, summarizeLibrary } from './knowledge.mjs';
+import { indexDocument, retrieve } from './semantic.mjs';
+
+const embeddingModel = process.env.QC_EMBED_MODEL || 'nomic-embed-text';
 
 await mkdir(data, { recursive: true, mode: 0o700 });
 let docs;
@@ -24,7 +27,7 @@ catch (error) { if (error.code !== 'ENOENT') throw error; docs = []; }
 let pending = Promise.resolve();
 function changeLibrary(update) {
   const operation = pending.then(async () => {
-    const next = update(docs);
+    const next = await update(docs);
     const temp = join(data, randomUUID() + '.tmp');
     try {
       await writeFile(temp, JSON.stringify(next), { mode: 0o600 });
@@ -71,6 +74,33 @@ async function extract(bytes, extension) {
   } finally { await rm(dir, { recursive: true, force: true }); }
 }
 
+async function embedLocal(values, purpose) {
+  try {
+    const prefix = purpose === 'query' ? 'search_query: ' : 'search_document: ';
+    const response = await fetch('http://127.0.0.1:11434/api/embed', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      signal: AbortSignal.timeout(90000),
+      body: JSON.stringify({ model: embeddingModel, input: values.map(value => prefix + value) })
+    });
+    if (!response.ok) throw new Error('Embedding request failed');
+    return (await response.json()).embeddings;
+  } catch {
+    throw problem(503, 'Semantic search is unavailable. Open Ollama and install ' + embeddingModel + '.');
+  }
+}
+
+async function ensureIndex() {
+  if (docs.every(doc => doc.embeddingModel === embeddingModel)) return;
+  await changeLibrary(async current => {
+    const indexed = [];
+    for (const doc of current) {
+      indexed.push(doc.embeddingModel === embeddingModel ? doc : await indexDocument(doc, embeddingModel, embedLocal));
+    }
+    return indexed;
+  });
+}
+
 async function answer(question, previousQuestion) {
   if (/^(?:(?:please )?summari[sz]e(?: (?:all|everything|(?:all )?(?:the |my )?(?:uploaded )?(?:files|documents)))?|(?:give me )?(?:a )?summary)[.!?]*$/i.test(question)) {
     const overview = summarizeLibrary(docs);
@@ -84,7 +114,8 @@ async function answer(question, previousQuestion) {
     );
     return summary || overview;
   }
-  const sources = retrieve(docs, question, previousQuestion);
+  await ensureIndex();
+  const sources = await retrieve(docs, question, previousQuestion, embeddingModel, embedLocal, 0.47);
   const missing = { answer: 'I couldn’t find enough in the uploaded files to answer that.', sources: [], mode: 'unanswered' };
   if (!sources.length) return missing;
   if (!model) return { answer: 'I found these passages in the uploaded files.', sources, mode: 'excerpts' };
@@ -190,7 +221,7 @@ export async function handleRequest(req, res) {
       const chunks = passages(pages, extension === '.pdf');
       if (!chunks.length) throw problem(422, 'No readable text found. Scanned PDFs need a text export.');
       const id = createHash('sha256').update(name.toLowerCase()).digest('hex').slice(0, 24);
-      const item = { id, name, updatedAt: new Date().toISOString(), chunks };
+      const item = await indexDocument({ id, name, updatedAt: new Date().toISOString(), chunks }, embeddingModel, embedLocal);
       await changeLibrary(current => [...current.filter(doc => doc.id !== id), item]);
       return json(res, 201, { name, passages: chunks.length });
     }
