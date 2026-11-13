@@ -4,6 +4,7 @@
     { "source": "/", "destination": "/api/cloud?route=/" },
     { "source": "/app.js", "destination": "/api/cloud?route=/app.js" },
     { "source": "/style.css", "destination": "/api/cloud?route=/style.css" },
+    { "source": "/api/slack/events", "destination": "/api/cloud?route=/api/slack/events" },
     { "source": "/api/chat", "destination": "/api/cloud?route=/api/chat" },
     { "source": "/api/library", "destination": "/api/cloud?route=/api/library" },
     { "source": "/api/library/:id", "destination": "/api/cloud?route=/api/library/:id" }

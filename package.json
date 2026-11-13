@@ -16,6 +16,7 @@
   "homepage": "https://github.com/nickblaze-4994/reviewer-help#readme",
   "dependencies": {
     "@vercel/blob": "^2.9.0",
+    "@vercel/functions": "^3.11.2",
     "ai": "^7.0.171",
     "mammoth": "^1.13.0",
     "unpdf": "^2.1.0"

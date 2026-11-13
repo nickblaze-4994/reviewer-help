@@ -8,6 +8,7 @@ import mammoth from 'mammoth';
 import { extractText } from 'unpdf';
 import { passages, summarizeLibrary } from '../knowledge.mjs';
 import { indexDocument, retrieve } from '../semantic.mjs';
+import { handleSlack } from '../slack.mjs';
 
 const embeddingModel = 'openai/text-embedding-3-small';
 const answerModel = process.env.QC_CLOUD_MODEL || 'alibaba/qwen3.5-flash';
@@ -30,10 +31,10 @@ function matches(actual, expected) {
   return timingSafeEqual(digest(actual), digest(expected));
 }
 
-async function readBody(req, limit) {
+async function readBody(req, limit, raw = false) {
   const chunks = [];
   let size = 0;
-  const stream = req.body === undefined ? req : [Buffer.isBuffer(req.body)
+  const stream = raw || req.body === undefined ? req : [Buffer.isBuffer(req.body)
     ? req.body : Buffer.from(typeof req.body === 'string' ? req.body : JSON.stringify(req.body))];
   for await (const chunk of stream) {
     const bytes = Buffer.from(chunk);
@@ -137,6 +138,11 @@ export default async function handler(req, res) {
   res.setHeader('X-Content-Type-Options', 'nosniff');
   res.setHeader('Content-Security-Policy', "default-src 'self'; object-src 'none'; base-uri 'none'; frame-ancestors 'none'");
   try {
+    const url = new URL(req.url, 'https://reviewer-help.invalid');
+    const path = url.searchParams.get('route') || url.pathname;
+    if (req.method === 'POST' && path === '/api/slack/events') {
+      return await handleSlack(req, res, readBody, async question => answer({ question }, await loadDocuments()));
+    }
     const teamPasscode = process.env.QC_TEAM_PASSCODE;
     const qaPasscode = process.env.QC_ADMIN_TOKEN;
     if (!teamPasscode || !qaPasscode) throw problem(503, 'The cloud workspace is awaiting access configuration.');
@@ -145,8 +151,6 @@ export default async function handler(req, res) {
       throw problem(401, 'Sign in with username reviewer and the team passcode.');
     }
     if (req.headers['sec-fetch-site'] === 'cross-site') throw problem(403, 'Open Reviewer Help directly.');
-    const url = new URL(req.url, 'https://reviewer-help.invalid');
-    const path = url.searchParams.get('route') || url.pathname;
     const asset = Object.hasOwn(assets, path) && assets[path];
     if (req.method === 'GET' && asset) {
       const [file, type] = asset;
